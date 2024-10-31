@@ -117,11 +117,11 @@ export const Mutations = new GraphQLObjectType({
                 authorId: { type: new GraphQLNonNull(UUIDType) },
             },
             resolve: async (parent, { userId, authorId }, { prisma }) => {
-                await prisma.subscribers.create({ 
+                await prisma.subscribersOnAuthors.create({
                     data: {
-                        userId: userId,
+                        subscriberId: userId,
                         authorId: authorId,
-                    }
+                    },
                 });
                 return `User with ID ${userId} has subscribed to author with ID ${authorId}.`;
             },
@@ -133,11 +133,13 @@ export const Mutations = new GraphQLObjectType({
                 authorId: { type: new GraphQLNonNull(UUIDType) },
             },
             resolve: async (parent, { userId, authorId }, { prisma }) => {
-                await prisma.subscribers.delete({ 
+                await prisma.subscribersOnAuthors.delete({
                     where: {
-                        userId: userId,
-                        authorId: authorId,
-                    }
+                        subscriberId_authorId: {
+                            subscriberId: userId,
+                            authorId: authorId,
+                        },
+                    },
                 });
                 return `User with ID ${userId} has unsubscribed from author with ID ${authorId}.`;
             },

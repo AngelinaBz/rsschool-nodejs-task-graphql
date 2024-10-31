@@ -5,26 +5,25 @@ import { MemberTypeId } from './membertype.js';
 export const ChangePostInput = new GraphQLInputObjectType({
     name: 'ChangePostInput',
     fields: {
-        title: { type: new GraphQLNonNull(GraphQLString) },
-        content: { type: new GraphQLNonNull(GraphQLString) },
+        title: { type: GraphQLString },
+        content: { type: GraphQLString },
     },
 });
 
 export const ChangeProfileInput = new GraphQLInputObjectType({
     name: 'ChangeProfileInput',
     fields: {
-        isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
-        yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
-        memberTypeId: { type: new GraphQLNonNull(MemberTypeId) },
+        isMale: { type: GraphQLBoolean },
+        yearOfBirth: { type: GraphQLInt },
+        memberTypeId: { type: MemberTypeId },
     },
 });
 
 export const ChangeUserInput = new GraphQLInputObjectType({
     name: 'ChangeUserInput',
     fields: {
-        name: { type: new GraphQLNonNull(GraphQLString) },
-        balance: { type: new GraphQLNonNull(GraphQLFloat) },
-        memberTypeId: { type: new GraphQLNonNull(MemberTypeId) },
+        name: { type: GraphQLString },
+        balance: { type: GraphQLFloat },
     },
 });
 
