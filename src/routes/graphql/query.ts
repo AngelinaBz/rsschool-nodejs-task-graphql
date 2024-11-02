@@ -4,7 +4,7 @@ import { PostType } from './types/post.js';
 import { ProfileType } from './types/profile.js';
 import { UserType } from './types/user.js';
 import { UUIDType } from './types/uuid.js';
-import { parse, parseResolveInfo, ResolveTree, simplify } from 'graphql-parse-resolve-info';
+import { parseResolveInfo } from 'graphql-parse-resolve-info';
 
 export const RootQueryType = new GraphQLObjectType({
     name: 'RootQueryType',
