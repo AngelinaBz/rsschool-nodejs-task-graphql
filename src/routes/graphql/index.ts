@@ -1,13 +1,10 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
-import { graphql, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, parse, validate } from 'graphql';
-import { MemberType, MemberTypeId } from './types/membertype.js';
-import { PostType } from './types/post.js';
-import { ProfileType } from './types/profile.js';
-import { UserType } from './types/user.js';
-import { UUIDType } from './types/uuid.js';
+import { graphql, GraphQLSchema, parse, validate } from 'graphql';
 import { Mutations } from './types/mutation.js';
 import depthLimit from 'graphql-depth-limit';
+import { RootQueryType } from './query.js';
+import { userLoader, postLoader, profileLoader, memberTypeLoader } from './loaders.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma } = fastify;
@@ -32,51 +29,23 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         return reply.status(400).send({ errors });
       }
 
+      const context = {
+        prisma,
+        memberTypeLoader: memberTypeLoader(prisma),
+        postLoader: postLoader(prisma),
+        profileLoader: profileLoader(prisma),
+        userLoader: userLoader(prisma),
+      };
+
       return graphql({
         schema,
         source: query,
         variableValues: variables,
-        contextValue: { prisma },
+        contextValue: context,
       });
     },
   });
 };
-
-export const RootQueryType = new GraphQLObjectType({
-  name: 'RootQueryType',
-  fields: {
-    memberTypes: {
-      type: new GraphQLNonNull(new GraphQLList(MemberType)),
-    },
-    memberType: {
-      type: MemberType,
-      args: {
-        id: { type: new GraphQLNonNull(MemberTypeId) },
-      },
-    },
-    users: { type: new GraphQLNonNull(new GraphQLList(UserType)) },
-    user: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(UUIDType) },
-      },
-    },
-    posts: { type: new GraphQLNonNull(new GraphQLList(PostType)) },
-    post: {
-      type: PostType,
-      args: {
-        id: { type: new GraphQLNonNull(UUIDType) },
-      },
-    },
-    profiles: { type: new GraphQLNonNull(new GraphQLList(ProfileType)) },
-    profile: {
-      type: ProfileType,
-      args: {
-        id: { type: new GraphQLNonNull(UUIDType) },
-      },
-    },
-  },
-});
 
 const schema = new GraphQLSchema({
   query: RootQueryType,
