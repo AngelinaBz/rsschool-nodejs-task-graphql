@@ -4,7 +4,7 @@ import { graphql, GraphQLSchema, parse, validate } from 'graphql';
 import { Mutations } from './types/mutation.js';
 import depthLimit from 'graphql-depth-limit';
 import { RootQueryType } from './query.js';
-import { userLoader, postLoader, profileLoader, memberTypeLoader } from './loaders.js';
+import { userLoader, postLoader, profileLoader, memberTypeLoader, userPostsLoader } from './loaders.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma } = fastify;
@@ -33,6 +33,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         prisma,
         memberTypeLoader: memberTypeLoader(prisma),
         postLoader: postLoader(prisma),
+        userPostsLoader: userPostsLoader(prisma),
         profileLoader: profileLoader(prisma),
         userLoader: userLoader(prisma),
       };

@@ -24,6 +24,21 @@ export const postLoader = (prisma) =>
         return ids.map(id => postMap[id as string] || null);
     });
 
+export const userPostsLoader = (prisma) =>
+    new DataLoader(async (authorIds) => {
+        const posts = await prisma.post.findMany({
+            where: { authorId: { in: authorIds as string[] } },
+        });
+        const postMap = {};
+        posts.forEach(post => {
+            if (!postMap[post.authorId]) {
+                postMap[post.authorId] = [];
+            }
+            postMap[post.authorId].push(post);
+        });
+        return authorIds.map(authorId => postMap[authorId as string] || []);
+    });
+
 export const profileLoader = (prisma) =>
     new DataLoader(async (ids) => {
         const profiles = await prisma.profile.findMany({

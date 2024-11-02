@@ -17,8 +17,8 @@ export const UserType = new GraphQLObjectType({
         },
         posts: {
             type: new GraphQLNonNull(new GraphQLList(PostType)),
-            resolve: async ({ id }, _, { postsLoader }) => {
-                return postsLoader.load(id);
+            resolve: async ({ id }, _, { userPostsLoader }) => {
+                return userPostsLoader.load(id);
             },
         },
         userSubscribedTo: {
