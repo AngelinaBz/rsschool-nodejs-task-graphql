@@ -4,6 +4,7 @@ import { PostType } from './types/post.js';
 import { ProfileType } from './types/profile.js';
 import { UserType } from './types/user.js';
 import { UUIDType } from './types/uuid.js';
+import { parse, parseResolveInfo, ResolveTree, simplify } from 'graphql-parse-resolve-info';
 
 export const RootQueryType = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -31,8 +32,17 @@ export const RootQueryType = new GraphQLObjectType({
         },
         users: { 
             type: new GraphQLNonNull(new GraphQLList(UserType)),
-            resolve: async (parent, _, { prisma, userLoader }) => {
-                const users = await prisma.user.findMany();
+            resolve: async (parent, _, { prisma, userLoader }, info) => {
+                const parsedInfo = parseResolveInfo(info);
+
+                const fields = parsedInfo!.fieldsByTypeName?.User || {};
+                
+                const include = {
+                    ...(fields['userSubscribedTo'] && { userSubscribedTo: true }),
+                    ...(fields['subscribedToUser'] && { subscribedToUser: true })
+                };
+                
+                const users = await prisma.user.findMany({ include });
                 
                 users.forEach((user) => {
                     userLoader.prime(user.id, user);
