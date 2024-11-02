@@ -11,8 +11,8 @@ export const UserType = new GraphQLObjectType({
         balance: { type: new GraphQLNonNull(GraphQLFloat) },
         profile: {
             type: ProfileType,
-            resolve: async ({ id }, _, { profileLoader }) => {
-                return profileLoader.load(id);
+            resolve: async ({ id }, _, { userProfileLoader }) => {
+                return userProfileLoader.load(id);
             },
         },
         posts: {

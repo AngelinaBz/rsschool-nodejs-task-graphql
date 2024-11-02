@@ -51,16 +51,28 @@ export const profileLoader = (prisma) =>
         return ids.map(id => profileMap[id as string] || null);
     });
 
-export const userLoader = (prisma) => {
-  return new DataLoader(async (ids: readonly string[]) => {
-    const users = await prisma.user.findMany({
-      where: { id: { in: [...ids] } },
-      include: {
-        subscribedToUser: true,
-        userSubscribedTo: true,
-      },
+export const userProfileLoader = (prisma) =>
+    new DataLoader(async (userIds) => {
+      const profiles = await prisma.profile.findMany({
+        where: { userId: { in: userIds as string[] } },
+      });
+  
+      const profileMap = {};
+      profiles.forEach(profile => {
+          profileMap[profile.userId] = profile;
+      });
+      return userIds.map(id => profileMap[id as string] || null);
     });
 
-    return ids.map((id) => users.find((user) => id === user.id));
-  });
-};
+export const userLoader = (prisma) =>
+    new DataLoader(async (ids) => {
+        const users = await prisma.user.findMany({
+            where: { id: { in: ids as string[] } },
+            include: { userSubscribedTo: true, subscribedToUser: true },
+        });
+        const userMap = {};
+        users.forEach(user => {
+            userMap[user.id] = user;
+        });
+        return ids.map(id => userMap[id as string] || null);
+    }); 
