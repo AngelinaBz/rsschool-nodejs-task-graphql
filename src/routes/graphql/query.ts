@@ -10,32 +10,86 @@ export const RootQueryType = new GraphQLObjectType({
     fields: {
         memberTypes: {
             type: new GraphQLNonNull(new GraphQLList(MemberType)),
+            resolve: async (parent, _, { prisma, memberTypeLoader }) => {
+                const memberTypes = await prisma.memberType.findMany();
+                
+                memberTypes.forEach((memberType) => {
+                    memberTypeLoader.prime(memberType.id, memberType);
+                });
+
+                return memberTypes;
+            },
         },
         memberType: {
             type: MemberType,
             args: {
                 id: { type: new GraphQLNonNull(MemberTypeId) },
             },
+            resolve: async (_, { id }, { memberTypeLoader }) => {
+                return memberTypeLoader.load(id);
+            },
         },
-        users: { type: new GraphQLNonNull(new GraphQLList(UserType)) },
+        users: { 
+            type: new GraphQLNonNull(new GraphQLList(UserType)),
+            resolve: async (parent, _, { prisma, userLoader }) => {
+                const users = await prisma.user.findMany();
+                
+                users.forEach((user) => {
+                    userLoader.prime(user.id, user);
+                });
+
+                return users;
+            },
+        },
         user: {
             type: UserType,
             args: {
                 id: { type: new GraphQLNonNull(UUIDType) },
             },
+            resolve: async (_, { id }, { userLoader }) => {
+                return userLoader.load(id);
+            },
         },
-        posts: { type: new GraphQLNonNull(new GraphQLList(PostType)) },
+        posts: { 
+            type: new GraphQLNonNull(new GraphQLList(PostType)),
+            resolve: async (parent, _, { prisma, postLoader }) => {
+                const posts = await prisma.post.findMany();
+                
+                posts.forEach((post) => {
+                    postLoader.prime(post.id, post);
+                });
+
+                return posts;
+            },
+        },
         post: {
             type: PostType,
             args: {
                 id: { type: new GraphQLNonNull(UUIDType) },
             },
+            resolve: async (_, { id }, { postLoader }) => {
+                return postLoader.load(id);
+            },
         },
-        profiles: { type: new GraphQLNonNull(new GraphQLList(ProfileType)) },
+        profiles: { 
+            type: new GraphQLNonNull(new GraphQLList(ProfileType)),
+            resolve: async (parent, _, { prisma, profileLoader }) => {
+                const profiles = await prisma.profile.findMany();
+                
+                profiles.forEach((profile) => {
+                    profileLoader.prime(profile.id, profile);
+                });
+
+                return profiles;
+            },
+        },
         profile: {
             type: ProfileType,
             args: {
                 id: { type: new GraphQLNonNull(UUIDType) },
+            },
+            resolve: async (_, { id }, { profileLoader }) => {
+                return profileLoader.load(id);
             },
         },
     },
