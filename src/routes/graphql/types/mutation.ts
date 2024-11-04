@@ -13,7 +13,7 @@ export const Mutations = new GraphQLObjectType({
             args: {
                 dto: { type: new GraphQLNonNull(CreateUserInput) },
             },
-            resolve: (parent, { dto }, { prisma }) => {
+            resolve: async (parent, { dto }, { prisma }) => {
                 return prisma.user.create({
                     data: dto,
                 });

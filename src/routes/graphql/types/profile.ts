@@ -10,7 +10,7 @@ export const ProfileType = new GraphQLObjectType({
         yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
         memberType: {
             type: new GraphQLNonNull(MemberType),
-            async resolve({ memberTypeId }, _, { memberTypeLoader }) {
+            resolve: async ({ memberTypeId }, _, { memberTypeLoader }) => {
                 return memberTypeLoader.load(memberTypeId);
             },
         },
